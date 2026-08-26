@@ -1,0 +1,13 @@
+[SddmGreeterTheme]
+Name=magi
+Description=Evangelion MAGI terminal greeter theme
+Author=desmonk
+Copyright=(c) 2026 desmonk
+License=MIT
+Type=sddm-theme
+Version=0.1
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=magi
+Theme-API=2.0
+QtVersion=6
