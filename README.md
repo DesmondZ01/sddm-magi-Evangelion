@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="assets/screenshot.png" alt="MAGI Login System" width="800">
+  <img src="assets/start.png" alt="MAGI Boot Screen" width="800">
 </p>
 
 <h1 align="center">MAGI Login System</h1>
 
 <p align="center">
-  Evangelion MAGI terminal login screen for SDDM — Hyprland / Wayland
+  Evangelion MAGI terminal login screen for SDDM
 </p>
 
 <p align="center">
@@ -17,13 +17,13 @@
 
 ---
 
-## Preview
+## Screenshots
 
-<p align="center">
-  <img src="assets/screenshot-login.png" alt="Login Screen" width="800">
-</p>
+| Boot | Login | Granted | Denied |
+|:----:|:-----:|:-------:|:------:|
+| ![Boot](assets/start.png) | ![Login](assets/screenshot.png) | ![Granted](assets/access%20granted.png) | ![Denied](assets/access%20denied.png) |
 
-> **MELCHIOR** — *I believe I am the only one who can judge the future.*
+> *"The MAGI system is a supercomputer that manages NERV... three systems, three personalities, three mothers."*
 
 ## Features
 
@@ -48,16 +48,9 @@ sudo ./install.sh
 ### Manual
 
 ```bash
-# Clone the repo
 git clone https://github.com/DesmondZ01/sddm-magi.git
-
-# Copy theme files
 sudo cp -r sddm-magi /usr/share/sddm/themes/magi
-
-# Set as default theme
 echo -e "[Theme]\nCurrent=magi" | sudo tee /etc/sddm.conf.d/99-magi.conf
-
-# Restart SDDM (or reboot)
 sudo systemctl restart sddm
 ```
 
@@ -69,9 +62,7 @@ sudo systemctl restart sddm
 | `qt6-base` | 6.x |
 | `qt6-declarative` | 6.x |
 
-**Fonts** (bundled):
-- Share Tech Mono
-- Saira Condensed (Bold, SemiBold)
+**Fonts** (bundled): Share Tech Mono, Saira Condensed (Bold, SemiBold)
 
 ## Configuration
 
@@ -85,53 +76,28 @@ alertColor=#e10600   # Red alert
 dataColor=#38a8ff    # Cyan data
 ```
 
-## How It Works
-
-```
-┌─────────────────────────────────────────────────────┐
-│  NERV // MAGI LOGIN SYSTEM          TERMINAL 01    │
-│─────────────────────────────────────────────────────│
-│                                                     │
-│  ┌─────────────┐    ┌──────────────────────────┐   │
-│  │   ◯ HEX     │    │  MAGI SYS:               │   │
-│  │   RETICLE   │    │  MELCHIOR  ████░░░  OK   │   │
-│  │             │    │  BALTHASAR ██████░  OK   │   │
-│  │             │    │  CASPER    ████░░░  SYNC  │   │
-│  └─────────────┘    └──────────────────────────┘   │
-│                                                     │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  > desmonk@archlinux                         │   │
-│  │  ─────────────────────────────────────────── │   │
-│  │  ● HYPRLAND                                  │   │
-│  └──────────────────────────────────────────────┘   │
-│                                                     │
-│  ┌──────┐                                          │
-│  │22:47 │  [UP/DOWN] SELECT  [ENTER] BOOT          │
-│  └──────┘                                          │
-└─────────────────────────────────────────────────────┘
-```
-
 ## Project Structure
 
 ```
 sddm-magi/
-├── Main.qml              # Main theme file
-├── metadata.desktop      # SDDM theme metadata
-├── theme.conf            # Theme configuration
+├── Main.qml                # Main theme file
+├── metadata.desktop        # SDDM theme metadata
+├── theme.conf              # Theme configuration
+├── install.sh              # One-click installer
 ├── components/
-│   ├── HexReticle.qml    # Animated hexagon rings
-│   ├── MagiStack.qml     # MAGI system status
-│   ├── ClockPanel.qml    # Clock with CRT effect
-│   ├── BootLog.qml       # Boot log display
-│   ├── Bracket.qml       # Corner brackets
-│   ├── KanjiWatermark.qml # Japanese kanji
-│   ├── HazardStripes.qml # Warning stripes
-│   ├── Ruler.qml         # Measurement ruler
-│   ├── SplashCard.qml    # Login card
+│   ├── HexReticle.qml      # Animated hexagon rings
+│   ├── MagiStack.qml       # MAGI system status
+│   ├── ClockPanel.qml      # Clock with CRT effect
+│   ├── BootLog.qml         # Boot log display
+│   ├── Bracket.qml         # Corner brackets
+│   ├── KanjiWatermark.qml  # Japanese kanji
+│   ├── HazardStripes.qml   # Warning stripes
+│   ├── Ruler.qml           # Measurement ruler
+│   ├── SplashCard.qml      # Login card
 │   └── EmergencyOverlay.qml # Alert animation
 └── assets/
-    ├── fonts/            # Bundled fonts
-    └── scanlines.png     # CRT overlay
+    ├── fonts/              # Bundled fonts
+    └── scanlines.png       # CRT overlay
 ```
 
 ## Uninstall
@@ -144,7 +110,7 @@ sudo systemctl restart sddm
 
 ## Credits
 
-- **Evangelion** — Hideaki Ananno / Gainax / khara
+- **Evangelion** — Hideaki Anno / Gainax / khara
 - **NERV** — MAGI system design
 - Fonts: [Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono), [Saira Condensed](https://fonts.google.com/specimen/Saira+Condensed)
 
