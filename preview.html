@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NERV // MAGI TERMINAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Saira+Condensed:wght@600;700&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0809;
+  --gold:#ffcc00;
+  --gold-hi:#ffd83d;
+  --gold-dim:rgba(255,204,0,.45);
+  --gold-faint:rgba(255,204,0,.13);
+  --gold-text:rgba(255,204,0,.62);
+  --cyan:#38a8ff;
+  --cyan-glow:#7fd4ff;
+  --red:#e10600;
+  --dim:#6b6640;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  background-image:
+    linear-gradient(rgba(255,204,0,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,204,0,.025) 1px,transparent 1px);
+  background-size:42px 42px;
+  color:var(--gold);
+  font-family:'Share Tech Mono',ui-monospace,monospace;
+  font-size:14px;
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  height:100vh;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:60;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 52%,rgba(0,0,0,.6) 100%);
+}
+.crt{
+  position:fixed;inset:0;z-index:59;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.14) 0 1px,transparent 1px 3px);
+  animation:flicker 4s infinite steps(1);
+}
+@keyframes flicker{
+  0%,100%{opacity:.85}
+  92%{opacity:.85}
+  93%{opacity:.6}
+  94%{opacity:.85}
+  97%{opacity:.72}
+  98%{opacity:.85}
+}
+.sweep{
+  position:fixed;left:0;right:0;height:130px;top:-150px;z-index:58;pointer-events:none;
+  background:linear-gradient(to bottom,transparent,rgba(255,204,0,.05),transparent);
+  animation:sweepMove 9s linear infinite;
+}
+@keyframes sweepMove{to{top:110vh}}
+.bracket{position:fixed;width:42px;height:26px;z-index:57;border:0 solid var(--gold-dim)}
+.bracket.tl{top:52px;left:16px;border-top-width:2px;border-left-width:2px}
+.bracket.tr{top:52px;right:16px;border-top-width:2px;border-right-width:2px}
+.bracket.bl{bottom:56px;left:16px;border-bottom-width:2px;border-left-width:2px}
+.bracket.br{bottom:56px;right:16px;border-bottom-width:2px;border-right-width:2px}
+
+.side-kanji{
+  position:fixed;top:50%;transform:translateY(-50%);
+  writing-mode:vertical-rl;z-index:1;pointer-events:none;user-select:none;
+  font-family:'Noto Serif JP',serif;font-weight:900;
+  font-size:96px;letter-spacing:28px;
+  color:transparent;-webkit-text-stroke:1px rgba(225,6,0,.18);
+}
+.side-kanji.lft{left:36px}
+.side-kanji.rgt{right:36px;-webkit-text-stroke:1px rgba(255,204,0,.12)}
+@media(max-width:1500px){.side-kanji{display:none}}
+
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 30px 11px;
+  border-bottom:1px solid var(--gold-faint);
+  letter-spacing:3px;font-size:13px;
+  position:relative;z-index:5;
+}
+header .logo{display:flex;align-items:center;gap:12px}
+header svg{filter:drop-shadow(0 0 5px rgba(225,6,0,.6))}
+header .sub{color:var(--dim)}
+footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 30px 16px;border-top:1px solid var(--gold-faint);
+  font-size:12.5px;letter-spacing:2px;color:var(--dim);
+  position:relative;z-index:5;
+}
+
+.stage{position:relative}
+.hex-back{
+  position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);
+  z-index:0;pointer-events:none;
+}
+.hex-back .ring{animation:spin 70s linear infinite;transform-origin:50px 50px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.magi-stack{position:absolute;top:24px;left:32px;display:flex;flex-direction:column;gap:18px;z-index:2;width:240px}
+.magi .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:12.5px;letter-spacing:1.5px;color:var(--gold)}
+.magi .row span:first-child::before{content:"⬡ ";color:var(--red)}
+.magi .st{color:var(--gold);font-size:11.5px}
+.bar{width:100%;height:6px;border:1px solid var(--gold-dim);padding:1px;margin-bottom:4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#1565a8,var(--cyan));animation:pulseBar 3.2s ease-in-out infinite alternate}
+.magi:nth-child(2) .bar i{animation-duration:4.1s}
+.magi:nth-child(3) .bar i{animation-duration:2.7s}
+@keyframes pulseBar{from{width:72%}to{width:94%}}
+.magi .cap{font-size:10px;letter-spacing:2px;color:var(--dim)}
+
+.sync-panel{
+  border:1px solid var(--gold-dim);background:rgba(5,5,4,.84);
+  box-shadow:0 0 22px rgba(0,0,0,.55);
+}
+.sync-title{
+  padding:6px 12px;font-size:11px;letter-spacing:3px;color:var(--dim);
+  border-bottom:1px solid var(--gold-faint);
+  display:flex;justify-content:space-between;
+}
+.sync-title .jp{font-family:'Noto Serif JP',serif;font-weight:700;color:var(--gold-text)}
+.sync-grid{display:flex;gap:3px;height:58px;align-items:flex-end;padding:9px 10px}
+.sync-bar{flex:1;min-height:10%;transition:height .65s cubic-bezier(.4,0,.2,1);
+  background:linear-gradient(to top,#0d2c4d,#2e97e8 70%,#8fd0ff)}
+.bootlog{
+  position:absolute;top:24px;right:32px;width:396px;z-index:2;
+  border:1px solid var(--gold-dim);
+  background:rgba(5,5,4,.84);
+  box-shadow:0 0 22px rgba(0,0,0,.55);
+}
+.bootlog .title{
+  padding:6px 12px;font-size:11px;letter-spacing:3px;color:var(--dim);
+  border-bottom:1px solid var(--gold-faint);
+  display:flex;justify-content:space-between;
+}
+.bootlog ul{list-style:none;padding:10px 14px 12px;font-size:12.5px;line-height:1.75;color:var(--gold-text)}
+.bootlog li{opacity:0;transform:translateX(-6px);transition:.25s ease-out;white-space:pre}
+.bootlog li.in{opacity:1;transform:none}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+.micro{position:absolute;z-index:2;font-size:11px;letter-spacing:2px;color:var(--gold-text)}
+.micro b{color:var(--gold);font-weight:normal}
+.micro .warn{color:var(--red)}
+.micro.m1{left:32px;bottom:30px}
+.micro.m2{right:32px;bottom:30px;text-align:right}
+
+.ruler{position:absolute;left:60px;right:60px;bottom:8px;height:15px;display:flex;justify-content:space-between;z-index:2}
+.ruler span{width:1px;height:6px;background:rgba(255,204,0,.35)}
+.ruler span.big{height:12px;background:rgba(255,204,0,.6)}
+.playhead{position:absolute;top:-3px;width:2px;height:19px;background:#fff;box-shadow:0 0 8px #fff;animation:scan 14s linear infinite}
+@keyframes scan{from{left:0}to{left:calc(100% - 2px)}}
+
+.center-zone{
+  height:100%;position:relative;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  animation:rise .7s cubic-bezier(.2,.7,.2,1) both,fadeIn .9s ease-out both;
+}
+@keyframes rise{from{transform:translateY(26px)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.clock{text-align:center;margin-bottom:22px}
+.clock-label{font-size:11px;letter-spacing:5px;color:var(--dim);margin-bottom:7px}
+.clock-label b{color:var(--red);font-weight:normal}
+.clock .time{
+  font-family:'Saira Condensed',sans-serif;font-weight:700;
+  font-size:68px;letter-spacing:12px;line-height:1;margin-right:-12px;
+  color:#ff4438;
+  text-shadow:0 0 16px rgba(225,6,0,.55),0 0 46px rgba(225,6,0,.25);
+}
+.clock .date{margin-top:8px;font-size:13px;letter-spacing:6px;color:var(--gold-text)}
+
+.card{
+  width:480px;border:1px solid var(--gold-dim);
+  background:rgba(11,8,6,.88);backdrop-filter:blur(3px);
+  box-shadow:0 0 34px rgba(0,0,0,.65),inset 0 0 40px rgba(255,204,0,.03);
+}
+.card .hazard{
+  height:10px;
+  background:repeating-linear-gradient(-45deg,var(--gold) 0 13px,#0c0a08 13px 26px);
+}
+.card-inner{padding:20px 26px 24px}
+.label{font-size:11.5px;letter-spacing:3px;color:var(--dim);margin-bottom:12px}
+.label b{color:var(--gold);font-weight:normal}
+.label .jp{font-family:'Noto Serif JP',serif;font-weight:700;font-size:12px;color:var(--gold-text)}
+
+.user{
+  display:flex;align-items:center;gap:14px;
+  padding:8px 12px;margin-bottom:8px;
+  border:1px solid transparent;cursor:pointer;
+  transition:.16s ease-out;
+}
+.user:hover{border-color:var(--gold-dim);background:rgba(255,204,0,.05);transform:translateX(4px)}
+.user.selected{border-color:var(--gold);background:rgba(255,204,0,.07);box-shadow:inset 3px 0 0 var(--gold)}
+.numblock{
+  width:46px;height:46px;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#e01000,#9c0000);
+  color:#fff;font-family:'Saira Condensed',sans-serif;font-weight:700;
+  font-size:22px;letter-spacing:1px;
+  box-shadow:0 0 12px rgba(225,6,0,.35);
+}
+.uinfo{flex:1}
+.uname{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:3.5px;color:var(--gold-hi)}
+.umeta{font-size:11px;letter-spacing:1.5px;color:var(--gold-text);margin-top:2px}
+.umeta .jp{font-family:'Noto Serif JP',serif;font-weight:700}
+.ucheck{font-size:13px;color:var(--red);opacity:0;transition:.16s}
+.user.selected .ucheck{opacity:1}
+
+.pw-wrap input[type=password]{
+  width:100%;padding:11px 14px;font-family:inherit;font-size:16px;letter-spacing:8px;
+  color:var(--gold-hi);caret-color:var(--gold);
+  background:rgba(0,0,0,.5);border:1px solid var(--gold-dim);outline:none;
+  transition:.16s;
+}
+.pw-wrap input[type=password]:focus{border-color:var(--gold);box-shadow:0 0 12px rgba(255,204,0,.22)}
+.pw-wrap input[type=password]::placeholder{color:var(--dim);letter-spacing:3px;font-size:13px}
+
+.auth-btn{
+  margin-top:18px;width:100%;padding:12px;
+  font-family:inherit;font-size:14px;letter-spacing:5px;
+  color:var(--gold);background:transparent;border:1px solid var(--gold);
+  cursor:pointer;transition:.15s;
+}
+.auth-btn:hover{background:var(--gold);color:#0c0a08;box-shadow:0 0 18px rgba(255,204,0,.4)}
+.auth-btn:active{transform:translateY(1px)}
+.demo-hint{margin-top:12px;text-align:center;font-size:10.5px;letter-spacing:2px;color:var(--dim)}
+
+.flash{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:0}
+.flash.red{background:radial-gradient(circle at center,rgba(225,6,0,.32),rgba(225,6,0,.06))}
+.flash.gold{background:radial-gradient(circle at center,rgba(255,204,0,.3),rgba(255,204,0,.06))}
+.flash.white{background:radial-gradient(circle at center,rgba(255,255,255,.5),rgba(255,255,255,.12))}
+.flash.on{animation:flashAnim .6s ease-out}
+@keyframes flashAnim{0%{opacity:1}100%{opacity:0}}
+.edge-alert{position:fixed;inset:0;z-index:79;pointer-events:none;opacity:0;box-shadow:inset 0 0 90px rgba(225,6,0,.5)}
+.edge-alert.on{animation:edgeAnim .6s ease-out}
+@keyframes edgeAnim{0%{opacity:1}100%{opacity:0}}
+
+.emergency{
+  position:fixed;inset:0;z-index:110;display:none;
+  flex-direction:column;justify-content:space-between;
+  background:rgba(225,6,0,.08);
+}
+.emergency.on{display:flex}
+.hz{
+  height:76px;
+  background:repeating-linear-gradient(-45deg,#e8c400 0 24px,#141414 24px 48px);
+  animation:hazardScroll .9s linear infinite;
+  box-shadow:0 0 30px rgba(0,0,0,.6);
+}
+.hz.bottom{transform:scaleX(-1)}
+@keyframes hazardScroll{to{background-position:68px 0}}
+.em-center{
+  align-self:center;text-align:center;
+  padding:26px 64px;border:3px solid currentColor;
+  animation:invertFlash .5s steps(1) infinite;
+}
+@keyframes invertFlash{
+  0%{background:var(--red);color:#fff}
+  50%{background:#fff;color:var(--red)}
+}
+.em-big{font-family:'Noto Serif JP',serif;font-weight:900;font-size:64px;letter-spacing:16px;margin-right:-16px}
+.em-jp{font-family:'Noto Serif JP',serif;font-weight:900;font-size:28px;letter-spacing:10px;margin-top:10px;margin-right:-10px}
+.em-sub{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:5px;margin-top:16px}
+
+.stamp{
+  position:fixed;left:50%;top:46%;z-index:105;pointer-events:none;
+  transform:translate(-50%,-50%) rotate(-5deg) scale(1.3);
+  font-family:'Noto Serif JP',serif;font-weight:900;
+  font-size:40px;letter-spacing:8px;
+  padding:12px 34px;border:3px double currentColor;
+  background:rgba(0,0,0,.75);opacity:0;white-space:nowrap;
+  transition:opacity .16s,transform .16s cubic-bezier(.2,1.6,.4,1);
+}
+.stamp.show{opacity:1;transform:translate(-50%,-50%) rotate(-5deg) scale(1)}
+.stamp.hide{opacity:0;transition:opacity .35s}
+.stamp.fail{color:var(--red)}
+.stamp.ok{color:var(--gold)}
+
+.card.shake{animation:shakeAnim .4s}
+@keyframes shakeAnim{
+  0%,100%{transform:none}
+  15%{transform:translateX(-9px)}
+  30%{transform:translateX(8px)}
+  45%{transform:translateX(-7px)}
+  60%{transform:translateX(6px)}
+  75%{transform:translateX(-4px)}
+  90%{transform:translateX(2px)}
+}
+
+#splash{
+  position:fixed;inset:0;z-index:130;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  cursor:pointer;transition:opacity .55s;
+}
+#splash.gone{opacity:0;pointer-events:none}
+.splash-jp{
+  font-family:'Noto Serif JP',serif;font-weight:900;
+  font-size:min(96px,11vw);color:#fff;letter-spacing:12px;margin-right:-12px;
+  animation:jolt 2.4s infinite;
+}
+@keyframes jolt{
+  0%,86%,100%{transform:none;text-shadow:0 0 30px rgba(255,255,255,.25)}
+  87%{transform:translateX(-4px) skewX(3deg);text-shadow:-4px 0 var(--red),4px 0 #4af}
+  89%{transform:translateX(3px);text-shadow:4px 0 var(--red),-4px 0 #4af}
+  91%{transform:none;text-shadow:none}
+  93%{text-shadow:0 0 30px rgba(255,255,255,.25)}
+}
+.splash-line{width:360px;height:2px;background:var(--red);box-shadow:0 0 12px var(--red)}
+.splash-en{color:var(--red);font-size:17px;letter-spacing:14px;margin-right:-14px}
+.splash-skip{position:absolute;bottom:34px;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.3)}
+
+.plug{position:relative;cursor:pointer;user-select:none}
+.plug .current{color:var(--gold);letter-spacing:2px}
+.plug .arrow{color:var(--dim);margin-left:6px;display:inline-block;transition:.15s}
+.plug.open .arrow{transform:rotate(180deg)}
+.plug-menu{
+  position:absolute;bottom:calc(100% + 8px);left:-10px;min-width:220px;
+  background:rgba(5,5,4,.97);border:1px solid var(--gold-dim);
+  box-shadow:0 0 18px rgba(0,0,0,.6);
+  opacity:0;pointer-events:none;transform:translateY(6px);transition:.15s;
+}
+.plug.open .plug-menu{opacity:1;pointer-events:auto;transform:none}
+.plug-menu div{padding:8px 14px;letter-spacing:2px;font-size:12px;color:var(--dim);transition:.12s}
+.plug-menu div:hover{background:rgba(255,204,0,.08);color:var(--gold)}
+.plug-menu div.active{color:var(--gold)}
+.plug-menu div.active::after{content:" ◂"}
+
+.geo{letter-spacing:2px}
+.geo b{color:var(--gold);font-weight:normal}
+</style>
+</head>
+<body>
+<div class="crt"></div>
+<div class="sweep"></div>
+<div class="bracket tl"></div><div class="bracket tr"></div>
+<div class="bracket bl"></div><div class="bracket br"></div>
+
+<div class="side-kanji lft">人類補完計画</div>
+<div class="side-kanji rgt">第三新東京市</div>
+
+<header>
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24"><path d="M21.5 2.5C10 3.5 3.8 9.5 2.5 21.5c8.5-1 16.5-7.5 19-19z" fill="#e10600"/><path d="M2.5 21.5C9 19 15 14 18 7" stroke="#0b0809" stroke-width=".8" fill="none"/></svg>
+    <span>NERV&nbsp;//&nbsp;MAGI SYSTEM v3.31</span>
+  </div>
+  <div>TOKYO-3&nbsp;&nbsp;·&nbsp;&nbsp;<span class="sub">第3新東京市&nbsp;&nbsp;·&nbsp;&nbsp;+9:00 JST</span></div>
+</header>
+
+<div class="stage" id="stage">
+  <div class="hex-back">
+    <svg width="600" height="600" viewBox="0 0 100 100">
+      <polygon points="50,3 93,26.5 93,73.5 50,97 7,73.5 7,26.5" fill="none" stroke="#e10600" stroke-width=".7"/>
+      <g class="ring">
+        <circle cx="50" cy="50" r="43" fill="none" stroke="rgba(255,204,0,.4)" stroke-width=".35" stroke-dasharray="2.5 3"/>
+      </g>
+      <polygon points="50,27 69,61.5 31,61.5" fill="none" stroke="#e10600" stroke-width=".55"/>
+      <rect x="47.5" y="47.5" width="5" height="5" fill="none" stroke="#e10600" stroke-width=".5"/>
+      <circle cx="50" cy="50" r="1" fill="#e10600"/>
+      <line x1="50" y1="3" x2="50" y2="14" stroke="rgba(255,204,0,.4)" stroke-width=".3"/>
+      <line x1="50" y1="86" x2="50" y2="97" stroke="rgba(255,204,0,.4)" stroke-width=".3"/>
+      <line x1="7" y1="26.5" x2="16" y2="31.5" stroke="rgba(255,204,0,.4)" stroke-width=".3"/>
+      <line x1="84" y1="68.5" x2="93" y2="73.5" stroke="rgba(255,204,0,.4)" stroke-width=".3"/>
+      <line x1="93" y1="26.5" x2="84" y2="31.5" stroke="rgba(255,204,0,.4)" stroke-width=".3"/>
+      <line x1="16" y1="68.5" x2="7" y2="73.5" stroke="rgba(255,204,0,.4)" stroke-width=".3"/>
+    </svg>
+  </div>
+
+  <div class="magi-stack">
+    <div class="magi">
+      <div class="row"><span>MELCHIOR-1</span><span class="st">ONLINE</span></div>
+      <div class="bar"><i></i></div>
+      <div class="cap">SCIENCE // 2ND TREE OF LIFE</div>
+    </div>
+    <div class="magi">
+      <div class="row"><span>BALTHASAR-2</span><span class="st">ONLINE</span></div>
+      <div class="bar"><i></i></div>
+      <div class="cap">LABOR // PERSONNEL MATRIX</div>
+    </div>
+    <div class="magi">
+      <div class="row"><span>CASPER-3</span><span class="st">ONLINE</span></div>
+      <div class="bar"><i></i></div>
+      <div class="cap">FAITH // DECISION QUORUM</div>
+    </div>
+
+    <div class="sync-panel">
+      <div class="sync-title"><span>SYNC DATA</span><span class="jp">同期率</span></div>
+      <div class="sync-grid" id="syncGrid"></div>
+    </div>
+  </div>
+
+  <div class="bootlog">
+    <div class="title"><span>SYSTEM LOG</span><span>TTY1</span></div>
+    <ul id="log"></ul>
+  </div>
+
+  <div class="center-zone">
+    <div class="clock">
+      <div class="clock-label">LOCAL TIME // <b>東京-3</b></div>
+      <div class="time" id="clkTime">00:00:00</div>
+      <div class="date" id="clkDate">--- 0000.00.00</div>
+    </div>
+
+    <div class="card" id="card">
+      <div class="hazard"></div>
+      <div class="card-inner">
+        <div class="label"><b>SUBJECT REGISTRY</b>&nbsp;&nbsp;<span class="jp">人事ファイル</span></div>
+
+        <div class="user selected" data-name="desmonk">
+          <div class="numblock">01</div>
+          <div class="uinfo">
+            <div class="uname">DESMONK</div>
+            <div class="umeta">SUBJECT: THIRD CHILD · CLEARANCE: PILOT · <span class="jp">第3適格者</span></div>
+          </div>
+          <span class="ucheck">◂</span>
+        </div>
+
+        <div class="user" data-name="guest">
+          <div class="numblock">02</div>
+          <div class="uinfo">
+            <div class="uname">GUEST</div>
+            <div class="umeta">SUBJECT: OTHERS · CLEARANCE: CADET</div>
+          </div>
+          <span class="ucheck">◂</span>
+        </div>
+
+        <div class="label" style="margin-top:16px"><b>AUTHENTICATION CODE</b>&nbsp;&nbsp;<span class="jp">認証コード</span></div>
+        <div class="pw-wrap">
+          <input type="password" id="pw" placeholder="AWAITING INPUT" autocomplete="off">
+        </div>
+
+        <button class="auth-btn" id="authBtn">[ AUTHENTICATE ]</button>
+        <div class="demo-hint">// DEMO: FAIL ×2 → EMERGENCY · 3RD ATTEMPT GRANTS ACCESS //</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="micro m1">POSITION ANGLE :: <b>041.7</b>&nbsp;&nbsp;ORDER CORRECTION :: <b>0.02</b></div>
+  <div class="micro m2">PATTERN ANALYSIS :: <b class="warn">BLUE</b>&nbsp;&nbsp;A.T. FIELD :: <b>ACTIVE</b></div>
+
+  <div class="ruler" id="ruler"></div>
+</div>
+
+<footer>
+  <div class="plug" id="plug">
+    <span class="current" id="plugCurrent">PLUG SUITE: HYPRLAND</span><span class="arrow">▼</span>
+    <div class="plug-menu">
+      <div class="active">HYPRLAND (WAYLAND)</div>
+      <div>PLASMA (X11)</div>
+      <div>CONSOLE TTY</div>
+    </div>
+  </div>
+  <div class="geo"><span style="font-family:'Noto Serif JP',serif;font-weight:700">エントリープラグ接続</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b>MAGI CONSENSUS: 2/3</b>&nbsp;&nbsp;·&nbsp;&nbsp;SIG:<b>▮▮▮▯</b></div>
+</footer>
+
+<div class="flash" id="flash"></div>
+<div class="edge-alert" id="edge"></div>
+<div class="stamp" id="stamp"></div>
+
+<div class="emergency" id="emergency">
+  <div class="hz"></div>
+  <div class="em-center">
+    <div class="em-big">EMERGENCY</div>
+    <div class="em-jp">緊急事態発生</div>
+    <div class="em-sub">UNAUTHORIZED PERSONNEL DETECTED</div>
+  </div>
+  <div class="hz bottom"></div>
+</div>
+
+<div id="splash">
+  <div class="splash-jp">使徒、襲来</div>
+  <div class="splash-line"></div>
+  <div class="splash-en">ANGEL ATTACK</div>
+  <div class="splash-skip">CLICK OR PRESS ANY KEY TO CONTINUE</div>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const pad=n=>String(n).padStart(2,"0");
+  const days=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  function tick(){
+    const d=new Date();
+    $("clkTime").textContent=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+    $("clkDate").textContent=days[d.getDay()]+" "+d.getFullYear()+"."+pad(d.getMonth()+1)+"."+pad(d.getDate());
+  }
+  tick();setInterval(tick,1000);
+
+  const grid=$("syncGrid");
+  for(let i=0;i<26;i++){
+    const b=document.createElement("div");
+    b.className="sync-bar";
+    b.style.height=(15+Math.random()*80)+"%";
+    grid.appendChild(b);
+  }
+  setInterval(()=>{
+    [...grid.children].forEach(b=>{
+      b.style.height=(12+Math.random()*85)+"%";
+    });
+  },750);
+
+  const ruler=$("ruler");
+  for(let i=0;i<=90;i++){
+    const t=document.createElement("span");
+    if(i%5===0)t.className="big";
+    ruler.appendChild(t);
+  }
+  const ph=document.createElement("div");
+  ph.className="playhead";
+  ruler.appendChild(ph);
+
+  const logLines=[
+    "> MAGI SYSTEM BOOT SEQUENCE INITIATED",
+    "> MELCHIOR-1 .......... ONLINE",
+    "> BALTHASAR-2 ......... ONLINE",
+    "> CASPER-3 ............ ONLINE",
+    "> pattern analysis ......... BLUE",
+    "> A.T. field generation ... ACTIVE",
+    "> pilot sync ratio ........ 41.3%",
+    "> umbilical cable ......... NOMINAL",
+    "> personnel database ...... LOADED",
+    "> awaiting authentication "
+  ];
+  const log=$("log");
+  logLines.forEach((text,i)=>{
+    const li=document.createElement("li");
+    li.textContent=text;
+    if(i===logLines.length-1){
+      const c=document.createElement("span");
+      c.className="cursor";
+      li.appendChild(c);
+    }
+    log.appendChild(li);
+    setTimeout(()=>li.classList.add("in"),350+i*240);
+  });
+
+  const users=[...document.querySelectorAll(".user")];
+  users.forEach(u=>u.addEventListener("click",()=>{
+    users.forEach(x=>x.classList.remove("selected"));
+    u.classList.add("selected");
+    pw.focus();
+  }));
+
+  const pw=$("pw");
+  const card=$("card");
+  const flash=$("flash");
+  const edge=$("edge");
+  const stamp=$("stamp");
+  const emergency=$("emergency");
+  let attempts=0,busy=false;
+
+  function retrigger(el){
+    el.classList.remove("on");void el.offsetWidth;el.classList.add("on");
+  }
+  function showStamp(text,ok){
+    stamp.textContent=text;
+    stamp.className="stamp "+(ok?"ok":"fail");
+    void stamp.offsetWidth;
+    stamp.classList.add("show");
+    setTimeout(()=>{
+      stamp.classList.add("hide");
+      setTimeout(()=>stamp.classList.remove("show","hide"),360);
+    },1350);
+  }
+  function showEmergency(){
+    emergency.classList.remove("on");void emergency.offsetWidth;
+    emergency.classList.add("on");
+    setTimeout(()=>emergency.classList.remove("on"),1600);
+  }
+  function shake(){
+    card.classList.remove("shake");void card.offsetWidth;card.classList.add("shake");
+  }
+
+  $("authBtn").addEventListener("click",()=>{
+    if(busy)return;
+    if(!pw.value){
+      flash.className="flash red";retrigger(flash);
+      retrigger(edge);
+      showStamp("ENTRY REQUIRED",false);
+      shake();
+      return;
+    }
+    attempts++;
+    if(attempts<3){
+      busy=true;
+      showEmergency();
+      shake();
+      pw.value="";
+      setTimeout(()=>busy=false,1650);
+      return;
+    }
+    flash.className="flash white";retrigger(flash);
+    setTimeout(()=>{
+      flash.className="flash gold";retrigger(flash);
+      showStamp("ACCESS GRANTED · 同期率100%",true);
+    },180);
+    setTimeout(()=>{attempts=0;pw.value="";},900);
+  });
+  pw.addEventListener("keydown",e=>{
+    if(e.key==="Enter")$("authBtn").click();
+  });
+
+  const splash=$("splash");
+  function dismissSplash(){
+    if(!splash.classList.contains("gone")){
+      splash.classList.add("gone");
+      setTimeout(()=>splash.remove(),600);
+    }
+  }
+  setTimeout(dismissSplash,2400);
+  splash.addEventListener("click",dismissSplash);
+  window.addEventListener("keydown",dismissSplash,{once:true});
+
+  const plug=$("plug");
+  document.querySelectorAll(".plug-menu div").forEach(opt=>{
+    opt.addEventListener("click",e=>{
+      e.stopPropagation();
+      document.querySelectorAll(".plug-menu div").forEach(o=>o.classList.remove("active"));
+      opt.classList.add("active");
+      $("plugCurrent").textContent="PLUG SUITE: "+opt.textContent.trim().split(" ")[0];
+      plug.classList.remove("open");
+    });
+  });
+  plug.addEventListener("click",e=>{
+    if(e.target.closest(".plug-menu"))return;
+    plug.classList.toggle("open");
+  });
+  document.addEventListener("click",e=>{
+    if(!plug.contains(e.target))plug.classList.remove("open");
+  });
+
+  pw.focus();
+})();
+</script>
+</body>
+</html>
