@@ -21,7 +21,7 @@
 
 | Boot | Login | Granted | Denied |
 |:----:|:-----:|:-------:|:------:|
-| ![Boot](assets/start.png) | ![Login](assets/screenshot.png) | ![Granted](assets/access%20granted.png) | ![Denied](assets/access%20denied.png) |
+| ![Boot](assets/start.png) | ![Login](assets/login%20screen.png) | ![Granted](assets/access%20granted.png) | ![Denied](assets/access%20denied.png) |
 
 > *"The MAGI system is a supercomputer that manages NERV... three systems, three personalities, three mothers."*
 
